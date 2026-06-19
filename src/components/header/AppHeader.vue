@@ -1,19 +1,19 @@
-```vue
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useSimulation } from '../../composables/useSimulation'
 
-// Эмиттер для связи с главным файлом App.vue (открытие боковой панели)
 const emit = defineEmits<{
   (e: 'open-panel', mode: 'presets' | 'history' | 'settings'): void
 }>()
 
-// Состояние темы: true — включена тёмная тема, false — светлая
-const isDark = ref(false)
+const { currentMode } = useSimulation()
 
-// Функция переключения темы
+const isDark = ref(false)
+const isMenuOpen = ref(false)
+
 const toggleTheme = () => {
   isDark.value = !isDark.value
-
+  
   // Для того чтобы в Tailwind заработал Dark Mode,
   // нужно вешать класс 'dark' на самый корень страницы (тег <html>)
   if (isDark.value) {
@@ -22,16 +22,21 @@ const toggleTheme = () => {
     document.documentElement.classList.remove('dark')
   }
 }
+
+const handleMenuClick = (mode: 'presets' | 'history' | 'settings') => {
+  isMenuOpen.value = false
+  emit('open-panel', mode)
+}
 </script>
 
 <template>
   <header
-    class="h-16 shrink-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700
-           grid grid-cols-3 items-center px-6 z-10 relative transition-colors duration-300"
+    class="sticky top-0 h-16 shrink-0 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700
+           grid grid-cols-2 md:grid-cols-3 items-center px-6 z-40 transition-colors duration-300"
   >
     <div class="flex flex-col justify-self-start">
-      <h1 class="font-logo font-bold text-xl leading-tight">
-        Симулятор аккумулятора
+      <h1 class="font-logo font-bold text-xl leading-tight flex items-center gap-2 text-slate-800 dark:text-white">
+        <span class="text-blue-600">⚡</span> Симулятор аккумулятора
       </h1>
 
       <span class="font-body text-xs text-slate-500">
@@ -39,23 +44,33 @@ const toggleTheme = () => {
       </span>
     </div>
 
-    <div class="hidden md:flex justify-self-center bg-slate-100 dark:bg-slate-900 p-1 rounded-xl shadow-sm">
-      <button
-        class="font-body px-7 py-2 text-sm font-semibold rounded-lg bg-white dark:bg-slate-700 shadow-sm transition-all duration-200"
+    <div class="hidden md:flex relative justify-self-center bg-slate-100 dark:bg-slate-900 p-1 rounded-xl shadow-sm w-52">
+      
+      <div 
+        class="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-slate-700 rounded-lg shadow-sm transition-transform duration-300 ease-in-out"
+        :class="currentMode === 'discharge' ? 'translate-x-full' : 'translate-x-0'"
+      ></div>
+
+      <button 
+        @click="currentMode = 'charge'"
+        class="relative z-10 w-1/2 py-1.5 font-body text-sm font-semibold transition-colors duration-300"
+        :class="currentMode === 'charge' ? 'text-slate-800 dark:text-white' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'"
       >
         Заряд
       </button>
-
-      <button
-        class="font-body px-7 py-2 text-sm font-semibold rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all duration-200"
+      
+      <button 
+        @click="currentMode = 'discharge'"
+        class="relative z-10 w-1/2 py-1.5 font-body text-sm font-semibold transition-colors duration-300"
+        :class="currentMode === 'discharge' ? 'text-slate-800 dark:text-white' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'"
       >
         Разряд
       </button>
     </div>
 
-    <div class="flex items-center gap-3 justify-self-end">
-
-      <button
+    <div class="flex items-center gap-3 relative justify-self-end">
+      
+      <button 
         @click="toggleTheme"
         class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-200 transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm"
         title="Переключить тему оформления"
@@ -89,12 +104,51 @@ const toggleTheme = () => {
         </svg>
       </button>
 
-      <button
-        @click="emit('open-panel', 'presets')"
-        class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-base font-bold transition-colors active:scale-95 shadow-sm"
+      <button 
+        @click="isMenuOpen = !isMenuOpen" 
+        class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-base font-bold transition-colors active:scale-95 shadow-sm text-slate-700 dark:text-slate-200"
+        :class="{ 'bg-slate-200 dark:bg-slate-600': isMenuOpen }"
       >
         ⋮
       </button>
+
+      <div 
+        v-if="isMenuOpen" 
+        @click="isMenuOpen = false" 
+        class="fixed inset-0 z-30"
+      ></div>
+
+      <div 
+        v-if="isMenuOpen"
+        class="absolute top-14 right-0 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 py-1.5 z-40 flex flex-col font-body"
+      >
+        <button 
+          @click="handleMenuClick('presets')" 
+          class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 text-sm font-medium text-slate-700 dark:text-slate-200 transition-colors w-full text-left"
+        >
+          <span class="text-blue-500 text-base">📘</span> Пресеты
+        </button>
+
+        <button 
+          @click="handleMenuClick('settings')" 
+          class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 text-sm font-medium text-slate-700 dark:text-slate-200 transition-colors w-full text-left"
+        >
+          <span class="text-slate-400 text-base">⚙️</span> Настройки
+        </button>
+
+        <div class="h-px bg-slate-100 dark:bg-slate-700 my-1 mx-3"></div>
+
+        <button 
+          class="flex items-center justify-between px-4 py-2.5 text-sm font-medium text-slate-400 dark:text-slate-500 w-full text-left cursor-default"
+        >
+          <div class="flex items-center gap-3">
+            <span class="text-slate-300 dark:text-slate-600 text-base">🕒</span> История
+          </div>
+          <span class="text-[10px] bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 px-2 py-0.5 rounded-full uppercase tracking-wider">
+            Скоро
+          </span>
+        </button>
+      </div>
 
     </div>
   </header>

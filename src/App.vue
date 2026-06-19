@@ -20,15 +20,15 @@ const closeSidePanel = () => {
 </script>
 
 <template>
-  <div class="h-screen w-full bg-slate-50 text-slate-900 flex flex-col font-sans transition-colors duration-300 dark:bg-slate-900 dark:text-white overflow-hidden">
+  <div class="min-h-screen w-full bg-slate-50 text-slate-900 flex flex-col font-sans transition-colors duration-300 dark:bg-slate-900 dark:text-white">
     
     <AppHeader @open-panel="openSidePanel" />
 
-    <main class="flex-1 p-4 lg:p-6 overflow-hidden flex flex-col relative z-0">
+    <main class="flex-1 p-4 lg:p-6 flex flex-col relative z-0">
       <SimulationLayout />
     </main>
 
-    <div class="px-4 lg:px-6 pb-4 shrink-0">
+    <div class="px-4 lg:px-6 pb-4 shrink-0 mt-auto">
       <StatsBar />
     </div>
 
