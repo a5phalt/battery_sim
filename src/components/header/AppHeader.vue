@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useSimulation } from '../../composables/useSimulation'
 
-// Эмиттер для связи с главным файлом App.vue
 const emit = defineEmits<{
   (e: 'open-panel', mode: 'presets' | 'history' | 'settings'): void
 }>()
 
-const isDark = ref(false)
-const isMenuOpen = ref(false) // Состояние выпадающего меню
+const { currentMode } = useSimulation()
 
-// Переключение светлой/темной темы
+const isDark = ref(false)
+const isMenuOpen = ref(false)
+
 const toggleTheme = () => {
   isDark.value = !isDark.value
   if (isDark.value) {
@@ -19,10 +20,9 @@ const toggleTheme = () => {
   }
 }
 
-// Функция для обработки клика по пункту выпадающего меню
 const handleMenuClick = (mode: 'presets' | 'history' | 'settings') => {
-  isMenuOpen.value = false // Сначала закрываем маленькое меню
-  emit('open-panel', mode) // Затем даем команду App.vue открыть большую панель
+  isMenuOpen.value = false
+  emit('open-panel', mode)
 }
 </script>
 
@@ -38,11 +38,26 @@ const handleMenuClick = (mode: 'presets' | 'history' | 'settings') => {
       <span class="text-xs text-slate-500">Цифровой двойник</span>
     </div>
 
-    <div class="hidden md:flex bg-slate-100 dark:bg-slate-900 p-1 rounded-lg justify-self-center">
-      <button class="px-6 py-1.5 text-sm font-medium rounded-md bg-white dark:bg-slate-700 shadow-sm transition-colors text-slate-800 dark:text-white">
+    <div class="hidden md:flex relative bg-slate-100 dark:bg-slate-900 p-1 rounded-lg justify-self-center w-48">
+      
+      <div 
+        class="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-slate-700 rounded-md shadow-sm transition-transform duration-300 ease-in-out"
+        :class="currentMode === 'discharge' ? 'translate-x-full' : 'translate-x-0'"
+      ></div>
+
+      <button 
+        @click="currentMode = 'charge'"
+        class="relative z-10 w-1/2 py-1.5 text-sm font-medium transition-colors duration-300"
+        :class="currentMode === 'charge' ? 'text-slate-800 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
+      >
         Заряд
       </button>
-      <button class="px-6 py-1.5 text-sm font-medium rounded-md text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">
+      
+      <button 
+        @click="currentMode = 'discharge'"
+        class="relative z-10 w-1/2 py-1.5 text-sm font-medium transition-colors duration-300"
+        :class="currentMode === 'discharge' ? 'text-slate-800 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
+      >
         Разряд
       </button>
     </div>
