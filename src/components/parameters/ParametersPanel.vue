@@ -204,6 +204,7 @@ const validateInput = (field: keyof typeof params, min: number, max: number, eve
 }
 .hide-arrows {
   -moz-appearance: textfield;
+  appearance: textfield; /* <-- Добавили стандартное свойство, и предупреждение уйдет */
 }
 
 .custom-range {
