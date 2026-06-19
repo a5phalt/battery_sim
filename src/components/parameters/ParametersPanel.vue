@@ -6,8 +6,7 @@ const {
   params, 
   batteryTypes, 
   activeTypeCode, 
-  activeType, 
-  resetParams 
+  activeType 
 } = useSimulation()
 </script>
 
@@ -136,11 +135,11 @@ const {
     </div>
 
     <div class="mt-4 pt-5 flex gap-3 shrink-0 bg-white dark:bg-slate-800">
-      <button @click="resetParams" class="flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 py-2.5 rounded-lg text-sm font-semibold transition-colors">
-        Сбросить
-      </button>
       <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg text-sm font-semibold shadow-sm transition-colors">
         Применить
+      </button>
+      <button class="flex-1 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-blue-600 border border-slate-200 dark:border-slate-600 py-2.5 rounded-lg text-sm font-semibold transition-colors">
+        Сохранить пресет
       </button>
     </div>
   </div>
