@@ -6,8 +6,9 @@ import VoltageChart from '../components/charts/VoltageChart.vue'
 import SocChart from '../components/charts/SocChart.vue'
 import type { SimulationPoint } from '../types/SimulationPoint'
 
-// Точки симуляции от аналитика (логика полностью сохранена)
-const simulationPoints = ref<SimulationPoint[] | null>(null)
+import { useSimulation } from '../composables/useSimulation'
+
+const { simulationPoints } = useSimulation()
 </script>
 
 <template>

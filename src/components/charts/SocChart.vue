@@ -48,7 +48,7 @@ const chartData = computed(() => {
   }
 
   return {
-    labels: props.points.map(p => (p.time / 60).toFixed(1)),
+    labels: props.points.map(p => (p.time / 3600).toFixed(1)),
     datasets: [
       {
         label: 'SOC (%)',
@@ -87,7 +87,7 @@ const chartOptions = {
     x: {
       title: {
         display: true,
-        text: 'Время (мин)'
+        text: 'Время (ч)'
       },
       grid: {
         display: false

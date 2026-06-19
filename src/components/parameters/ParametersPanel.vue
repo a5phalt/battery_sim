@@ -2,11 +2,12 @@
 import { useSimulation } from '../../composables/useSimulation'
 
 // Вытягиваем наши параметры и новые переменные для типов батарей
-const { 
-  params, 
-  batteryTypes, 
-  activeTypeCode, 
-  activeType 
+const {
+  params,
+  batteryTypes,
+  activeTypeCode,
+  activeType,
+  runSimulation
 } = useSimulation()
 
 // Обновленная функция валидации без alert
@@ -185,7 +186,7 @@ const validateInput = (field: keyof typeof params, min: number, max: number, eve
     </div>
 
     <div class="mt-4 pt-5 flex gap-3 shrink-0 bg-white dark:bg-slate-800">
-      <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg text-sm font-semibold shadow-sm transition-colors">
+      <button  @click="runSimulation" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg text-sm font-semibold shadow-sm transition-colors">
         Применить
       </button>
       <button class="flex-1 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-blue-600 border border-slate-200 dark:border-slate-600 py-2.5 rounded-lg text-sm font-semibold transition-colors">

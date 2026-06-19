@@ -1,19 +1,26 @@
 import { reactive, ref, computed, watch } from 'vue'
+import { simulateDischarge } from '../simulation/dischargeModel'
+import { simulateCharge } from '../simulation/chargeSimulation'
+import type { SimulationPoint } from '../types/SimulationPoint'
+import type { BatteryType, BatteryTypeCode } from '../types/BatteryType'
 
 // ИСПРАВЛЕННЫЙ ПУТЬ: загружаем именно вашу базу данных
 import batteryData from '../data/batteryDatabase.json'
 
-// Защита от разных форматов JSON: если данные обернуты в {"types": [...]}, берем .types, иначе сам массив
-const batteryTypes = batteryData.types || batteryData
+
+const batteryTypes = (batteryData.types || batteryData) as BatteryType[]
 
 // Создаем переменную для хранения выбранного типа (по умолчанию - первый из базы)
-const activeTypeCode = ref(batteryTypes[0].code)
-
+const activeTypeCode = ref<BatteryTypeCode>(
+  batteryTypes[0].code
+)
 // Вычисляемое свойство: всегда возвращает полный объект текущей батареи с лимитами
-const activeType = computed(() => {
-  return batteryTypes.find((t: any) => t.code === activeTypeCode.value) || batteryTypes[0]
+const activeType = computed<BatteryType>(() => {
+  return (
+    batteryTypes.find(t => t.code === activeTypeCode.value) ||
+    batteryTypes[0]
+  )
 })
-
 // Инициализируем параметры дефолтными значениями из выбранной батареи
 const params = reactive({
   capacity: activeType.value.capacity.default,
@@ -25,6 +32,7 @@ const params = reactive({
 })
 
 const currentMode = ref<'charge' | 'discharge'>('discharge')
+const simulationPoints = ref<SimulationPoint[]>([])
 
 // Следим за изменением переменной activeTypeCode.
 // При смене типа в выпадающем списке подтягиваем новые дефолтные значения.
@@ -49,6 +57,32 @@ export function useSimulation() {
     params.initialSoc = 100
     params.simulationTime = 3.0
   }
+  const runSimulation = () => {
+    const result =
+  currentMode.value === 'charge'
+    ? simulateCharge({
+      initialSoc: params.initialSoc,
+      current: params.current,
+      timeStep: 60, // шаг 1 минута
+      batteryType: activeType.value,
+      capacity: params.capacity,
+      minVoltage: params.minVoltage,
+      maxVoltage: params.maxVoltage
+    })
+    : simulateDischarge({
+      initialSoc: params.initialSoc,
+      current: params.current,
+      timeStep: 60, // шаг 1 минута
+      batteryType: activeType.value,
+      capacity: params.capacity,
+      minVoltage: params.minVoltage,
+      maxVoltage: params.maxVoltage
+  })
+    
+
+
+    simulationPoints.value = result.points
+  }
 
   return {
     params,
@@ -56,6 +90,10 @@ export function useSimulation() {
     batteryTypes,    // Отдаем список типов для выпадающего меню
     activeTypeCode,  // Отдаем выбранный код для v-model
     activeType,      // Отдаем объект с лимитами для min/max ползунков
+    simulationPoints, // Отдаем массив точек для графика
+    runSimulation,
     resetParams
   }
+
+  
 }
