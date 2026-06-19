@@ -14,8 +14,6 @@ const isMenuOpen = ref(false)
 const toggleTheme = () => {
   isDark.value = !isDark.value
   
-  // Для того чтобы в Tailwind заработал Dark Mode,
-  // нужно вешать класс 'dark' на самый корень страницы (тег <html>)
   if (isDark.value) {
     document.documentElement.classList.add('dark')
   } else {
@@ -36,7 +34,7 @@ const handleMenuClick = (mode: 'presets' | 'history' | 'settings') => {
   >
     <div class="flex flex-col justify-self-start">
       <h1 class="font-logo font-bold text-xl leading-tight flex items-center gap-2 text-slate-800 dark:text-white">
-        <span class="text-blue-600">⚡</span> Симулятор аккумулятора
+        Симулятор аккумулятора
       </h1>
 
       <span class="font-body text-xs text-slate-500">
