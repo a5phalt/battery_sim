@@ -1,29 +1,129 @@
-<script setup lang="ts">
-// АРХИТЕКТУРНЫЙ КОНТРАКТ:
-// Говорим компоненту, что он должен принимать массивы чисел для отрисовки.
-// Аналитик (математик) потом передаст сюда рассчитанные данные из useSimulation.
-defineProps<{
-  timeLabels: number[]   // Массив времени (ось X)
-  voltageData: number[]  // Массив напряжения (ось Y)
-}>()
-
-// Заметка для Аналитика: здесь будет логика инициализации Chart.js
-</script>
-
 <template>
-  <div class="flex-1 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 flex flex-col min-h-[260px] transition-colors duration-300">
-    
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-200">Напряжение (V)</h3>
+  <div class="chart-container">
+    <Line 
+      v-if="chartData"
+      :data="chartData" 
+      :options="chartOptions" 
+    />
+    <div v-else class="chart-placeholder">
+      Запустите симуляцию для отображения графика
     </div>
-    
-    <div class="flex-1 relative w-full h-full flex items-center justify-center bg-slate-50 dark:bg-slate-900/40 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
-      
-      <span class="text-xs font-medium text-slate-400 text-center px-4">
-        Ожидание данных от математической модели...<br/>
-        <span class="text-[10px] opacity-70">(Место для Chart.js)</span>
-      </span>
-      
-      </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { Line } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+} from 'chart.js'
+import type { SimulationPoint } from '../../types/SimulationPoint'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+)
+
+const props = defineProps<{
+  points: SimulationPoint[] | null
+}>()
+
+const chartData = computed(() => {
+  if (!props.points || props.points.length === 0) {
+    return null
+  }
+
+  return {
+    labels: props.points.map(p => (p.time / 60).toFixed(1)),
+    datasets: [
+      {
+        label: 'Напряжение (В)',
+        data: props.points.map(p => p.voltage),
+        borderColor: '#3B82F6',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+      }
+    ]
+  }
+})
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: true,
+      position: 'top' as const,
+    },
+    tooltip: {
+      mode: 'index' as const,
+      intersect: false,
+      callbacks: {
+        label: (context: any) => {
+          return `Напряжение: ${context.parsed.y.toFixed(3)} В`
+        }
+      }
+    }
+  },
+  scales: {
+    x: {
+      title: {
+        display: true,
+        text: 'Время (мин)'
+      },
+      grid: {
+        display: false
+      }
+    },
+    y: {
+      title: {
+        display: true,
+        text: 'Напряжение (В)'
+      },
+      grid: {
+        color: 'rgba(0, 0, 0, 0.05)'
+      }
+    }
+  },
+  interaction: {
+    mode: 'nearest' as const,
+    axis: 'x' as const,
+    intersect: false
+  }
+}
+</script>
+
+<style scoped>
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.chart-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #9CA3AF;
+  font-size: 0.875rem;
+}
+</style>

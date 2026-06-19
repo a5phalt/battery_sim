@@ -2,7 +2,6 @@
 // ТИПЫ ДАННЫХ: ТИПЫ БАТАРЕЙ
 // ============================================
 
-// Коды типов батарей (строгая типизация — нельзя написать "li-ion", только "Li-Ion")
 export type BatteryTypeCode =
   | 'Li-Ion'
   | 'Li-Po'
@@ -13,43 +12,35 @@ export type BatteryTypeCode =
   | 'Alkaline'
   | 'Custom';
 
-// Режим работы симулятора
 export type SimulationMode = 'charge' | 'discharge';
 
-// ============================================
-// ТИП БАТАРЕИ (фиксированный справочник)
-// ============================================
-// Это ограничения для ползунков в UI.
-// Пользователь НЕ может менять этот список.
-// supportsDischarge убран — все батареи разряжаются.
 export interface BatteryType {
-  code: BatteryTypeCode;          // Код типа (используется в коде)
-  label: string;                  // Название для отображения в UI
-  color: string;                  // Цвет для графиков и иконок (HEX)
-  supportsCharge: boolean;        // Можно ли заряжать этот тип? (для Alkaline = false)
+  code: BatteryTypeCode;
+  label: string;
+  color: string;
+  supportsCharge: boolean;
 
-  // Ограничения для ползунка "Ёмкость":
   capacity: {
-    min: number;                  // Минимальная ёмкость (А·ч)
-    max: number;                  // Максимальная ёмкость (А·ч)
-    default: number;              // Значение по умолчанию
+    min: number;
+    max: number;
+    default: number;
   };
 
-  // Ограничения для ползунков "Мин. напряжение" и "Макс. напряжение":
   voltage: {
-    min: number;                  // Минимальное возможное напряжение (В)
-    max: number;                  // Максимальное возможное напряжение (В)
+    min: number;
+    max: number;
   };
 
-  // Ограничения для ползунка "Ток":
   current: {
-    min: number;                  // Минимальный ток (А)
-    max: number;                  // Максимальный ток (А)
-    defaultCharge: number;        // Ток заряда по умолчанию (А)
-    defaultDischarge: number;     // Ток разряда по умолчанию (А)
+    min: number;
+    max: number;
+    defaultCharge: number;
+    defaultDischarge: number;
   };
 
-  coulombicEfficiency: number;    // Кулоновская эффективность (0..1).
-                                  // Показывает, сколько заряда "теряется" при цикле
-                                  // 0.99 = теряется 1%, 0.85 = теряется 15%.
+  coulombicEfficiency: number;
+
+  // НОВОЕ ПОЛЕ: внутреннее сопротивление (Ом)
+  // Чем больше — тем сильнее "проседает" напряжение под нагрузкой
+  internalResistance: number;
 }
