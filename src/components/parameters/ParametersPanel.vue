@@ -135,7 +135,7 @@ const validateInput = (field: keyof typeof params, min: number, max: number, eve
         <input type="range" v-model.number="params.current" 
           :min="activeType.current.min" 
           :max="activeType.current.max" 
-          step="0.1" 
+          step="0.01" 
           :style="{ '--val': params.current, '--min': activeType.current.min, '--max': activeType.current.max }"
           class="custom-range w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-blue-600">
         <div class="flex justify-between text-xs text-slate-500 mt-1">
@@ -169,15 +169,15 @@ const validateInput = (field: keyof typeof params, min: number, max: number, eve
           <input 
             type="number" 
             :value="params.simulationTime"
-            @change="validateInput('simulationTime', 0.1, 10, $event)"
+            @change="validateInput('simulationTime', 0, 10, $event)"
             class="hide-arrows w-16 text-center text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-1 py-0.5 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
           />
         </div>
-        <input type="range" v-model.number="params.simulationTime" min="0.1" max="10" step="0.1" 
-          :style="{ '--val': params.simulationTime, '--min': 0.1, '--max': 10 }"
+        <input type="range" v-model.number="params.simulationTime" min="0" max="10" step="0.1" 
+          :style="{ '--val': params.simulationTime, '--min': 0, '--max': 10 }"
           class="custom-range w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-blue-600">
         <div class="flex justify-between text-xs text-slate-500 mt-1">
-          <span>0.1</span>
+          <span>0</span>
           <span>10</span>
         </div>
       </div>
