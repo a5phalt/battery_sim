@@ -30,5 +30,5 @@ export interface SimulationResult {
 export interface AppSettings {
   theme: 'light' | 'dark';      // Тема оформления
   defaultMode: 'charge' | 'discharge'; // Режим по умолчанию
-  timeStep: number;             // Шаг расчёта по умолчанию (с)
+  timeStep: number;             // Шаг расчёта по умолчнию (с)
 }

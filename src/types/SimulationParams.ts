@@ -11,5 +11,5 @@ export interface SimulationParams {
   mode: SimulationMode;         // Режим: 'charge' или 'discharge'
   initialSoc: number;           // Начальный уровень заряда (%)
                                 // Для разряда обычно 100, для заряда — 0
-  timeStep: number;             // Шаг расчёта (с) — технический параметр
+  timeStep: number;             // Шаг расчёта (с) — технический парамет
 }

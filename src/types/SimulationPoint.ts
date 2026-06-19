@@ -10,5 +10,5 @@ export interface SimulationPoint {
   voltage: number;              // Напряжение (В)
   current: number;              // Ток (А)
   power: number;                // Мощность (Вт) = U × I
-  energy: number;               // Энергия за этот шаг (Дж) = P × Δt
+  energy: number;               // Энергия за эот шаг (Дж) = P × Δt
 }
