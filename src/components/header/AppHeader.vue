@@ -28,8 +28,8 @@ const toggleTheme = () => {
          grid grid-cols-3 items-center px-6 z-10 relative transition-colors duration-300"
 >
     <div class="flex flex-col justify-self-start">
-      <h1 class="font-bold text-lg leading-tight flex items-center gap-2">
-        <span class="text-blue-600"></span>Симулятор аккумулятора
+      <h1 class="font-bold text-lg leading-tight">
+        Симулятор аккумулятора
       </h1>
       <span class="text-xs text-slate-500">Цифровой двойник</span>
     </div>
