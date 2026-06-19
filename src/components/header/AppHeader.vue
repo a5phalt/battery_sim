@@ -28,8 +28,8 @@ const handleMenuClick = (mode: 'presets' | 'history' | 'settings') => {
 
 <template>
   <header
-    class="h-16 shrink-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700
-           grid grid-cols-2 md:grid-cols-3 items-center px-6 z-20 relative transition-colors duration-300"
+    class="sticky top-0 h-16 shrink-0 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700
+           grid grid-cols-2 md:grid-cols-3 items-center px-6 z-40 transition-colors duration-300"
   >
     <div class="flex flex-col justify-self-start">
       <h1 class="font-bold text-lg leading-tight flex items-center gap-2 text-slate-800 dark:text-white">
