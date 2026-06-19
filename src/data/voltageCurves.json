@@ -1,0 +1,83 @@
+{
+  "Li-Ion": [
+    {"soc": 0, "voltage": 3.0},
+    {"soc": 5, "voltage": 3.3},
+    {"soc": 10, "voltage": 3.6},
+    {"soc": 20, "voltage": 3.68},
+    {"soc": 30, "voltage": 3.7},
+    {"soc": 40, "voltage": 3.72},
+    {"soc": 50, "voltage": 3.75},
+    {"soc": 60, "voltage": 3.8},
+    {"soc": 70, "voltage": 3.85},
+    {"soc": 80, "voltage": 3.95},
+    {"soc": 90, "voltage": 4.05},
+    {"soc": 95, "voltage": 4.12},
+    {"soc": 100, "voltage": 4.2}
+  ],
+  "Li-Po": [
+    {"soc": 0, "voltage": 3.0},
+    {"soc": 10, "voltage": 3.55},
+    {"soc": 20, "voltage": 3.68},
+    {"soc": 40, "voltage": 3.75},
+    {"soc": 60, "voltage": 3.82},
+    {"soc": 80, "voltage": 3.95},
+    {"soc": 100, "voltage": 4.2}
+  ],
+  "LiFePO4": [
+    {"soc": 0, "voltage": 2.5},
+    {"soc": 2, "voltage": 3.0},
+    {"soc": 5, "voltage": 3.2},
+    {"soc": 10, "voltage": 3.25},
+    {"soc": 20, "voltage": 3.28},
+    {"soc": 40, "voltage": 3.3},
+    {"soc": 60, "voltage": 3.31},
+    {"soc": 80, "voltage": 3.33},
+    {"soc": 90, "voltage": 3.35},
+    {"soc": 95, "voltage": 3.4},
+    {"soc": 98, "voltage": 3.5},
+    {"soc": 100, "voltage": 3.6}
+  ],
+  "Na-Ion": [
+    {"soc": 0, "voltage": 2.0},
+    {"soc": 20, "voltage": 2.8},
+    {"soc": 40, "voltage": 3.1},
+    {"soc": 60, "voltage": 3.3},
+    {"soc": 80, "voltage": 3.6},
+    {"soc": 100, "voltage": 4.0}
+  ],
+  "NiMH": [
+    {"soc": 0, "voltage": 1.0},
+    {"soc": 10, "voltage": 1.15},
+    {"soc": 20, "voltage": 1.2},
+    {"soc": 40, "voltage": 1.22},
+    {"soc": 60, "voltage": 1.23},
+    {"soc": 80, "voltage": 1.25},
+    {"soc": 90, "voltage": 1.3},
+    {"soc": 100, "voltage": 1.4}
+  ],
+  "Lead-Acid": [
+    {"soc": 0, "voltage": 10.5},
+    {"soc": 10, "voltage": 11.3},
+    {"soc": 20, "voltage": 11.6},
+    {"soc": 30, "voltage": 11.8},
+    {"soc": 40, "voltage": 11.95},
+    {"soc": 50, "voltage": 12.1},
+    {"soc": 60, "voltage": 12.25},
+    {"soc": 70, "voltage": 12.35},
+    {"soc": 80, "voltage": 12.45},
+    {"soc": 90, "voltage": 12.55},
+    {"soc": 100, "voltage": 12.7}
+  ],
+  "Alkaline": [
+    {"soc": 0, "voltage": 0.9},
+    {"soc": 20, "voltage": 1.15},
+    {"soc": 40, "voltage": 1.25},
+    {"soc": 60, "voltage": 1.35},
+    {"soc": 80, "voltage": 1.45},
+    {"soc": 100, "voltage": 1.6}
+  ],
+  "Custom": [
+    {"soc": 0, "voltage": 0},
+    {"soc": 100, "voltage": 1}
+  ]
+}
