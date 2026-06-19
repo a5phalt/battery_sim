@@ -26,15 +26,19 @@ const handleMenuClick = (mode: 'presets' | 'history' | 'settings') => {
 }
 </script>
 
+
 <template>
-  <header class="h-16 shrink-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-6 z-20 relative transition-colors duration-300">
-    
-    <div class="flex flex-col">
-      <h1 class="font-bold text-lg leading-tight flex items-center gap-2 text-slate-800 dark:text-white">
-        <span class="text-blue-600">⚡</span> Симулятор аккумулятора
+  <header
+  class="h-16 shrink-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700
+         grid grid-cols-3 items-center px-6 z-10 relative transition-colors duration-300"
+>
+    <div class="flex flex-col justify-self-start">
+      <h1 class="font-bold text-lg leading-tight">
+        Симулятор аккумулятора
       </h1>
       <span class="text-xs text-slate-500">Цифровой двойник</span>
     </div>
+
 
     <div class="hidden md:flex bg-slate-100 dark:bg-slate-900 p-1 rounded-lg">
       <button class="px-6 py-1.5 text-sm font-medium rounded-md bg-white dark:bg-slate-700 shadow-sm transition-colors text-slate-800 dark:text-white">
