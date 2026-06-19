@@ -1,0 +1,22 @@
+{
+  "presets": [
+    {
+      "id": "demo-1",
+      "name": "Li-Ion 18650",
+      "typeId": "Li-Ion",
+      "capacity": 2.7,
+      "minVoltage": 3.0,
+      "maxVoltage": 4.2,
+      "current": 1.35
+    },
+    {
+      "id": "demo-2",
+      "name": "LiFePO4",
+      "typeId": "LiFePO4",
+      "capacity": 2.0,
+      "minVoltage": 2.5,
+      "maxVoltage": 3.6,
+      "current": 1.0
+    }
+  ]
+}
