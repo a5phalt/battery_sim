@@ -38,7 +38,8 @@ const { params } = useSimulation()
           <span class="text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-2 py-0.5 text-slate-700 dark:text-slate-300">{{ params.capacity }}</span>
         </div>
         <input type="range" v-model.number="params.capacity" min="0.1" max="100" step="0.1" 
-          class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-blue-600">
+          :style="{ '--val': params.capacity, '--min': 0.1, '--max': 100 }"
+          class="custom-range w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-blue-600">
         <div class="flex justify-between text-xs text-slate-500 mt-1">
           <span>0.1</span>
           <span>100</span>
@@ -51,7 +52,8 @@ const { params } = useSimulation()
           <span class="text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-2 py-0.5 text-slate-700 dark:text-slate-300">{{ params.maxVoltage }}</span>
         </div>
         <input type="range" v-model.number="params.maxVoltage" min="2.5" max="4.3" step="0.1" 
-          class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-blue-600">
+          :style="{ '--val': params.maxVoltage, '--min': 2.5, '--max': 4.3 }"
+          class="custom-range w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-blue-600">
         <div class="flex justify-between text-xs text-slate-500 mt-1">
           <span>2.5</span>
           <span>4.3</span>
@@ -64,7 +66,8 @@ const { params } = useSimulation()
           <span class="text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-2 py-0.5 text-slate-700 dark:text-slate-300">{{ params.minVoltage }}</span>
         </div>
         <input type="range" v-model.number="params.minVoltage" min="2.5" max="4.3" step="0.1" 
-          class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-blue-600">
+          :style="{ '--val': params.minVoltage, '--min': 2.5, '--max': 4.3 }"
+          class="custom-range w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-blue-600">
         <div class="flex justify-between text-xs text-slate-500 mt-1">
           <span>2.5</span>
           <span>4.3</span>
@@ -77,7 +80,8 @@ const { params } = useSimulation()
           <span class="text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-2 py-0.5 text-slate-700 dark:text-slate-300">{{ params.current }}</span>
         </div>
         <input type="range" v-model.number="params.current" min="0.1" max="100" step="0.1" 
-          class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-blue-600">
+          :style="{ '--val': params.current, '--min': 0.1, '--max': 100 }"
+          class="custom-range w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-blue-600">
         <div class="flex justify-between text-xs text-slate-500 mt-1">
           <span>0.1</span>
           <span>100</span>
@@ -90,7 +94,8 @@ const { params } = useSimulation()
           <span class="text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-2 py-0.5 text-slate-700 dark:text-slate-300">{{ params.initialSoc }}</span>
         </div>
         <input type="range" v-model.number="params.initialSoc" min="0" max="100" step="1" 
-          class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-blue-600">
+          :style="{ '--val': params.initialSoc, '--min': 0, '--max': 100 }"
+          class="custom-range w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-blue-600">
         <div class="flex justify-between text-xs text-slate-500 mt-1">
           <span>0</span>
           <span>100</span>
@@ -103,7 +108,8 @@ const { params } = useSimulation()
           <span class="text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-2 py-0.5 text-slate-700 dark:text-slate-300">{{ params.simulationTime }}</span>
         </div>
         <input type="range" v-model.number="params.simulationTime" min="0.1" max="10" step="0.1" 
-          class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-blue-600">
+          :style="{ '--val': params.simulationTime, '--min': 0.1, '--max': 10 }"
+          class="custom-range w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-blue-600">
         <div class="flex justify-between text-xs text-slate-500 mt-1">
           <span>0.1</span>
           <span>10</span>
@@ -124,7 +130,22 @@ const { params } = useSimulation()
 </template>
 
 <style scoped>
-/* Скрываем громоздкий скроллбар */
+/* Логика закрашивания синей полосы */
+.custom-range {
+  /* Вычисляем процент ползунка (от 0% до 100%) на основе переменных, переданных из HTML */
+  --percent: calc((var(--val) - var(--min)) / (var(--max) - var(--min)) * 100%);
+  
+  /* Рисуем фон: слева синий (#2563eb), справа светло-серый (#e2e8f0) */
+  background: linear-gradient(to right, #2563eb var(--percent), #e2e8f0 var(--percent));
+}
+
+/* В тёмной теме справа должен быть тёмно-серый (#334155), чтобы не резало глаза */
+.dark .custom-range {
+  background: linear-gradient(to right, #2563eb var(--percent), #334155 var(--percent));
+}
+
+
+/* Скрываем громоздкий скроллбар панели параметров */
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
