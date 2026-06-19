@@ -8,6 +8,26 @@ const {
   activeTypeCode, 
   activeType 
 } = useSimulation()
+
+// Обновленная функция валидации без alert
+const validateInput = (field: keyof typeof params, min: number, max: number, event: Event) => {
+  const target = event.target as HTMLInputElement
+  let val = parseFloat(target.value)
+
+  // Если пользователь стер все или ввел буквы, ставим минимум
+  if (isNaN(val)) {
+    val = min
+  }
+
+  // Просто "тихо" обрезаем значение до лимитов
+  if (val < min) val = min
+  if (val > max) val = max
+
+  // Записываем проверенное значение обратно в глобальный стейт
+  params[field] = val
+  // Принудительно обновляем текст в окошке
+  target.value = val.toString()
+}
 </script>
 
 <template>
@@ -39,7 +59,12 @@ const {
       <div class="flex flex-col gap-1">
         <div class="flex justify-between items-center mb-1">
           <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Ёмкость, Ah</label>
-          <span class="text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-2 py-0.5 text-slate-700 dark:text-slate-300">{{ params.capacity }}</span>
+          <input 
+            type="number" 
+            :value="params.capacity"
+            @change="validateInput('capacity', activeType.capacity.min, activeType.capacity.max, $event)"
+            class="hide-arrows w-16 text-center text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-1 py-0.5 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+          />
         </div>
         <input type="range" v-model.number="params.capacity" 
           :min="activeType.capacity.min" 
@@ -56,7 +81,12 @@ const {
       <div class="flex flex-col gap-1">
         <div class="flex justify-between items-center mb-1">
           <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Макс. напряжение, V</label>
-          <span class="text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-2 py-0.5 text-slate-700 dark:text-slate-300">{{ params.maxVoltage }}</span>
+          <input 
+            type="number" 
+            :value="params.maxVoltage"
+            @change="validateInput('maxVoltage', activeType.voltage.min, activeType.voltage.max, $event)"
+            class="hide-arrows w-16 text-center text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-1 py-0.5 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+          />
         </div>
         <input type="range" v-model.number="params.maxVoltage" 
           :min="activeType.voltage.min" 
@@ -73,7 +103,12 @@ const {
       <div class="flex flex-col gap-1">
         <div class="flex justify-between items-center mb-1">
           <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Мин. напряжение, V</label>
-          <span class="text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-2 py-0.5 text-slate-700 dark:text-slate-300">{{ params.minVoltage }}</span>
+          <input 
+            type="number" 
+            :value="params.minVoltage"
+            @change="validateInput('minVoltage', activeType.voltage.min, activeType.voltage.max, $event)"
+            class="hide-arrows w-16 text-center text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-1 py-0.5 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+          />
         </div>
         <input type="range" v-model.number="params.minVoltage" 
           :min="activeType.voltage.min" 
@@ -90,7 +125,12 @@ const {
       <div class="flex flex-col gap-1">
         <div class="flex justify-between items-center mb-1">
           <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Ток, A</label>
-          <span class="text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-2 py-0.5 text-slate-700 dark:text-slate-300">{{ params.current }}</span>
+          <input 
+            type="number" 
+            :value="params.current"
+            @change="validateInput('current', activeType.current.min, activeType.current.max, $event)"
+            class="hide-arrows w-16 text-center text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-1 py-0.5 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+          />
         </div>
         <input type="range" v-model.number="params.current" 
           :min="activeType.current.min" 
@@ -107,7 +147,12 @@ const {
       <div class="flex flex-col gap-1">
         <div class="flex justify-between items-center mb-1">
           <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">SOC (начальный), %</label>
-          <span class="text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-2 py-0.5 text-slate-700 dark:text-slate-300">{{ params.initialSoc }}</span>
+          <input 
+            type="number" 
+            :value="params.initialSoc"
+            @change="validateInput('initialSoc', 0, 100, $event)"
+            class="hide-arrows w-16 text-center text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-1 py-0.5 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+          />
         </div>
         <input type="range" v-model.number="params.initialSoc" min="0" max="100" step="1" 
           :style="{ '--val': params.initialSoc, '--min': 0, '--max': 100 }"
@@ -121,7 +166,12 @@ const {
       <div class="flex flex-col gap-1">
         <div class="flex justify-between items-center mb-1">
           <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Время моделирования, ч</label>
-          <span class="text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-2 py-0.5 text-slate-700 dark:text-slate-300">{{ params.simulationTime }}</span>
+          <input 
+            type="number" 
+            :value="params.simulationTime"
+            @change="validateInput('simulationTime', 0.1, 10, $event)"
+            class="hide-arrows w-16 text-center text-sm font-medium border border-slate-200 dark:border-slate-700 rounded px-1 py-0.5 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+          />
         </div>
         <input type="range" v-model.number="params.simulationTime" min="0.1" max="10" step="0.1" 
           :style="{ '--val': params.simulationTime, '--min': 0.1, '--max': 10 }"
@@ -146,6 +196,17 @@ const {
 </template>
 
 <style scoped>
+/* Прячем дефолтные стрелочки (спиннеры) внутри input type="number" во всех браузерах */
+.hide-arrows::-webkit-outer-spin-button,
+.hide-arrows::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.hide-arrows {
+  -moz-appearance: textfield;
+  appearance: textfield; /* <-- Добавили стандартное свойство, и предупреждение уйдет */
+}
+
 .custom-range {
   --percent: calc((var(--val) - var(--min)) / (var(--max) - var(--min)) * 100%);
   background: linear-gradient(to right, #2563eb var(--percent), #e2e8f0 var(--percent));

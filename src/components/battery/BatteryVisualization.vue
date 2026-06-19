@@ -1,20 +1,39 @@
 <script setup lang="ts">
-// Здесь логика получения текущего SOC из composables/useSimulation.ts
+import { useSimulation } from '../../composables/useSimulation'
+
+// Берем данные из нашего глобального "мозга"
+const { params, currentMode } = useSimulation()
 </script>
 
 <template>
-  <div class="w-full max-w-[160px] aspect-[1/2.5] bg-slate-100 dark:bg-slate-900 border-4 border-slate-300 dark:border-slate-600 rounded-3xl relative overflow-hidden flex flex-col justify-end p-1">
-    
-    <div class="bg-gradient-to-t from-green-500 to-green-400 w-full rounded-2xl transition-all duration-500 ease-in-out relative flex items-center justify-center flex-col" style="height: 78%;">
-      <span class="text-white font-bold text-2xl drop-shadow-md">78%</span>
-      <span class="text-white/90 text-sm font-medium mt-1">3.87 V</span>
-    </div>
+  <div class="relative w-[75%] sm:w-[50%] lg:w-[85%] xl:w-[70%] max-w-[280px] min-w-[150px] aspect-[1/2.8] bg-slate-50 dark:bg-slate-800 border-4 border-slate-300 dark:border-slate-600 rounded-[2.5rem] 2xl:rounded-[3.5rem] p-1.5 md:p-2.5 flex flex-col justify-end shadow-sm mx-auto transition-all duration-300">
 
-    <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-1/3 h-3 bg-slate-300 dark:bg-slate-600 rounded-t-md"></div>
-  </div>
-  
-  <div class="absolute bottom-6 text-center">
-    <p class="text-xs text-slate-500">Осталось времени</p>
-    <p class="text-sm font-medium">2 ч 35 мин</p>
+    <div class="absolute -top-3 md:-top-4 left-1/2 -translate-x-1/2 w-[35%] h-3 md:h-4 border-4 border-b-0 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 rounded-t-lg md:rounded-t-xl transition-colors duration-300"></div>
+
+    <div
+      class="w-full rounded-[2rem] 2xl:rounded-[3rem] transition-all duration-300 ease-out relative shadow-inner"
+      :class="currentMode === 'charge' ? 'bg-gradient-to-t from-green-500 to-green-400' : 'bg-gradient-to-t from-blue-600 to-blue-400'"
+      :style="{ height: `${params.initialSoc}%`, minHeight: '8%' }"
+    ></div>
+
+    <div class="absolute inset-0 flex flex-col items-center justify-center text-white z-20 pointer-events-none drop-shadow-md py-8 xl:py-12">
+      
+      <div class="flex flex-col items-center mt-auto">
+        <span class="text-[10px] xl:text-xs font-semibold opacity-90 tracking-wider uppercase mb-1">SOC</span>
+        <span class="text-4xl sm:text-5xl 2xl:text-6xl font-bold leading-none">{{ params.initialSoc }}%</span>
+      </div>
+
+      <div class="w-10 xl:w-16 h-px bg-white/40 my-4 xl:my-6"></div>
+
+      <span class="text-lg sm:text-xl 2xl:text-2xl font-semibold tracking-wide">{{ params.maxVoltage }} V</span>
+
+      <div class="w-10 xl:w-16 h-px bg-white/40 my-4 xl:my-6"></div>
+
+      <div class="flex flex-col items-center mb-auto">
+        <span class="text-[10px] xl:text-xs font-medium opacity-90 mb-1">Осталось времени</span>
+        <span class="text-xs sm:text-sm 2xl:text-base font-bold whitespace-nowrap">2 ч 35 мин</span>
+      </div>
+
+    </div>
   </div>
 </template>
