@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+
+    /* Fonts */
+
+    --font-logo: 'Manrope', sans-serif;
+    --font-body: 'Inter', sans-serif;
+
+}
+
+body {
+    font-family: var(--font-body);
+}
+
+@layer utilities {
+
+    .font-logo {
+        font-family: var(--font-logo);
+    }
+
+}
