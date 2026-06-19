@@ -6,9 +6,10 @@
       "color": "#3B82F6",
       "supportsCharge": true,
       "capacity": { "min": 0.1, "max": 100, "default": 2.7 },
-      "voltage": { "min": 3.0, "max": 4.2 },
+      "voltage": { "min": 2.5, "max": 4.2 },
       "current": { "min": 0.1, "max": 20, "defaultCharge": 1.35, "defaultDischarge": 1.35 },
-      "coulombicEfficiency": 0.99
+      "coulombicEfficiency": 0.99,
+      "internalResistance": 0.05
     },
     {
       "code": "Li-Po",
@@ -18,7 +19,8 @@
       "capacity": { "min": 0.1, "max": 50, "default": 2.6 },
       "voltage": { "min": 3.0, "max": 4.2 },
       "current": { "min": 0.1, "max": 30, "defaultCharge": 1.3, "defaultDischarge": 1.3 },
-      "coulombicEfficiency": 0.99
+      "coulombicEfficiency": 0.99,
+      "internalResistance": 0.04
     },
     {
       "code": "LiFePO4",
@@ -28,7 +30,8 @@
       "capacity": { "min": 0.5, "max": 200, "default": 2.0 },
       "voltage": { "min": 2.5, "max": 3.6 },
       "current": { "min": 0.1, "max": 50, "defaultCharge": 1.0, "defaultDischarge": 1.0 },
-      "coulombicEfficiency": 0.98
+      "coulombicEfficiency": 0.98,
+      "internalResistance": 0.06
     },
     {
       "code": "Na-Ion",
@@ -38,7 +41,8 @@
       "capacity": { "min": 0.5, "max": 100, "default": 3.0 },
       "voltage": { "min": 2.0, "max": 4.0 },
       "current": { "min": 0.1, "max": 25, "defaultCharge": 1.5, "defaultDischarge": 1.5 },
-      "coulombicEfficiency": 0.97
+      "coulombicEfficiency": 0.97,
+      "internalResistance": 0.07
     },
     {
       "code": "NiMH",
@@ -48,7 +52,8 @@
       "capacity": { "min": 0.5, "max": 10, "default": 2.7 },
       "voltage": { "min": 1.0, "max": 1.4 },
       "current": { "min": 0.1, "max": 5, "defaultCharge": 1.35, "defaultDischarge": 1.35 },
-      "coulombicEfficiency": 0.90
+      "coulombicEfficiency": 0.90,
+      "internalResistance": 0.08
     },
     {
       "code": "Lead-Acid",
@@ -58,7 +63,8 @@
       "capacity": { "min": 1, "max": 200, "default": 7.0 },
       "voltage": { "min": 10.5, "max": 14.4 },
       "current": { "min": 0.1, "max": 50, "defaultCharge": 0.7, "defaultDischarge": 0.7 },
-      "coulombicEfficiency": 0.85
+      "coulombicEfficiency": 0.85,
+      "internalResistance": 0.02
     },
     {
       "code": "Alkaline",
@@ -68,7 +74,8 @@
       "capacity": { "min": 0.5, "max": 5, "default": 2.5 },
       "voltage": { "min": 0.9, "max": 1.6 },
       "current": { "min": 0.01, "max": 2, "defaultCharge": 0, "defaultDischarge": 0.25 },
-      "coulombicEfficiency": 0
+      "coulombicEfficiency": 0,
+      "internalResistance": 0.15
     },
     {
       "code": "Custom",
@@ -78,7 +85,8 @@
       "capacity": { "min": 0.1, "max": 1000, "default": 5.0 },
       "voltage": { "min": 0.5, "max": 100 },
       "current": { "min": 0.01, "max": 100, "defaultCharge": 1.0, "defaultDischarge": 1.0 },
-      "coulombicEfficiency": 0.95
+      "coulombicEfficiency": 0.95,
+      "internalResistance": 0.10
     }
   ]
 }
