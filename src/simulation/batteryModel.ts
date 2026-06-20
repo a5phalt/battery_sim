@@ -3,13 +3,14 @@
 // ============================================
 
 import type { SimulationPoint } from '../types/SimulationPoint';
-import { getVoltageFromCurve } from './voltageCurves';
+import type { BatteryTypeCode } from '../types/BatteryType';
+import { calculateNonLinearVoltage } from './voltageCurve';
 
 const SECONDS_PER_HOUR = 3600;
 
 /**
  * Изменение SOC за один шаг.
- * ΔSOC = (I × Δt × η) / (C × 3600) × 100%
+ * SOC меняется ЛИНЕЙНО при постоянном токе.
  */
 export function calculateDeltaSoc(
   current: number,
@@ -21,38 +22,37 @@ export function calculateDeltaSoc(
 }
 
 /**
- * Реальное напряжение с учётом:
- * 1. Нелинейной кривой разряда (из даташитов)
- * 2. Внутреннего сопротивления
+ * Рассчитывает напряжение с учётом нелинейной кривой.
  * 
- * @param soc - уровень заряда (%)
- * @param batteryType - тип батареи
- * @param minVoltage - минимальное напряжение
- * @param maxVoltage - максимальное напряжение
- * @param current - ток (А)
- * @param internalResistance - внутреннее сопротивление (Ом)
- * @param isCharging - true если заряд, false если разряд
- * @returns напряжение на клеммах (В)
+ * ВАЖНО: minVoltage и maxVoltage ОБЯЗАТЕЛЬНО используются!
+ * Кривая масштабируется под эти значения.
  */
-export function calculateRealVoltage(
+export function calculateVoltage(
   soc: number,
-  batteryType: string,
+  batteryType: BatteryTypeCode,
   minVoltage: number,
   maxVoltage: number,
   current: number,
   internalResistance: number,
   isCharging: boolean
 ): number {
-  // 1. Базовое напряжение из нелинейной кривой
-  const baseVoltage = getVoltageFromCurve(soc, batteryType, minVoltage, maxVoltage);
+  // 1. Базовое напряжение по нелинейной кривой
+  //    ← ВОТ ЗДЕСЬ используется импортированная функция!
+  let voltage = calculateNonLinearVoltage(
+    soc,
+    batteryType,
+    minVoltage,
+    maxVoltage
+  );
 
-  // 2. Падение напряжения на внутреннем сопротивлении
+  // 2. Учёт внутреннего сопротивления
   const voltageDrop = current * internalResistance;
+  voltage = isCharging ? voltage + voltageDrop : voltage - voltageDrop;
 
-  // 3. При заряде напряжение ВЫШЕ, при разряде НИЖЕ
-  return isCharging
-    ? baseVoltage + voltageDrop
-    : baseVoltage - voltageDrop;
+  // 3. Ограничиваем напряжение пределами
+  voltage = Math.max(minVoltage, Math.min(maxVoltage, voltage));
+
+  return voltage;
 }
 
 /**
@@ -71,11 +71,12 @@ export function calculateEnergy(power: number, timeStep: number): number {
 
 /**
  * Создаёт одну точку симуляции.
+ * Собирает все расчёты в один объект SimulationPoint.
  */
 export function calculateStep(params: {
   time: number;
   soc: number;
-  batteryType: string;
+  batteryType: BatteryTypeCode;
   minVoltage: number;
   maxVoltage: number;
   current: number;
@@ -83,8 +84,8 @@ export function calculateStep(params: {
   isCharging: boolean;
   timeStep: number;
 }): SimulationPoint {
-  // Реальное напряжение с нелинейной кривой
-  const voltage = calculateRealVoltage(
+  // ← ЗДЕСЬ вызываем calculateVoltage, которая внутри использует calculateNonLinearVoltage
+  const voltage = calculateVoltage(
     params.soc,
     params.batteryType,
     params.minVoltage,
