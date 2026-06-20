@@ -1,70 +1,89 @@
 // ============================================
-// ИНТЕРПОЛЯЦИЯ НАПРЯЖЕНИЯ ПО КРИВОЙ
+// НЕЛИНЕЙНАЯ МОДЕЛЬ НАПРЯЖЕНИЯ
 // ============================================
-// Берём таблицу точек и находим напряжение для любого SOC.
-// Между точками — линейная интерполяция (прямая линия).
+// Использует табличные данные и интерполяцию
+// для построения реалистичной кривой напряжения.
 
 import type { BatteryTypeCode } from '../types/BatteryType';
 import voltageCurvesData from '../data/voltageCurves.json';
 
-// Тип одной точки кривой
-interface CurvePoint {
+// Тип для точки кривой
+interface VoltagePoint {
   soc: number;
   voltage: number;
 }
 
-// Все кривые (загружаются из JSON)
-const VOLTAGE_CURVES: Record<string, CurvePoint[]> = voltageCurvesData;
+// Загруженные кривые (из JSON)
+const voltageCurves: Record<string, VoltagePoint[]> = voltageCurvesData;
 
 /**
- * Находит напряжение для заданного SOC по таблице точек.
- * 
- * Как работает:
- * 1. Ищем две соседние точки, между которыми лежит наш SOC
- * 2. Считаем, на каком мы "проценте" между ними
- * 3. Берём напряжение как среднее между точками
- * 
- * Пример: SOC = 45%, точки (40%, 3.72В) и (50%, 3.75В)
- * Мы ровно посередине → напряжение = 3.735В
+ * Находит напряжение для заданного SOC по таблице.
+ * Использует линейную интерполяцию между точками.
  */
-export function getVoltageFromCurve(
-  soc: number,
-  batteryType: BatteryTypeCode
-): number {
-  const curve = VOLTAGE_CURVES[batteryType];
-  
-  if (!curve || curve.length === 0) {
-    throw new Error(`Кривая для типа ${batteryType} не найдена`);
-  }
-
-  // Ограничиваем SOC пределами
+function interpolateVoltage(soc: number, curve: VoltagePoint[]): number {
   const clampedSoc = Math.max(0, Math.min(100, soc));
-
-  // Если SOC ровно на точке — возвращаем её значение
-  const exactPoint = curve.find(p => p.soc === clampedSoc);
-  if (exactPoint) {
-    return exactPoint.voltage;
-  }
-
-  // Ищем две соседние точки
+  
   for (let i = 0; i < curve.length - 1; i++) {
-    const left = curve[i];
-    const right = curve[i + 1];
-
-    if (clampedSoc >= left.soc && clampedSoc <= right.soc) {
-      // Линейная интерполяция
-      const ratio = (clampedSoc - left.soc) / (right.soc - left.soc);
-      return left.voltage + ratio * (right.voltage - left.voltage);
+    const current = curve[i];
+    const next = curve[i + 1];
+    
+    if (clampedSoc >= current.soc && clampedSoc <= next.soc) {
+      const ratio = (clampedSoc - current.soc) / (next.soc - current.soc);
+      return current.voltage + ratio * (next.voltage - current.voltage);
     }
   }
-
-  // Если что-то пошло не так — возвращаем последнюю точку
+  
+  if (clampedSoc <= curve[0].soc) return curve[0].voltage;
   return curve[curve.length - 1].voltage;
 }
 
 /**
- * Проверка: есть ли кривая для данного типа батареи.
+ * Получает кривую напряжения для типа батареи.
  */
-export function hasVoltageCurve(batteryType: BatteryTypeCode): boolean {
-  return !!VOLTAGE_CURVES[batteryType] && VOLTAGE_CURVES[batteryType].length > 0;
+export function getVoltageCurve(batteryType: BatteryTypeCode): VoltagePoint[] | null {
+  return voltageCurves[batteryType] || null;
+}
+
+/**
+ * Рассчитывает напряжение по нелинейной кривой.
+ * 
+ * ⭐ ЗДЕСЬ находится код масштабирования под min/max пользователя!
+ * 
+ * @param soc - уровень заряда (0-100%)
+ * @param batteryType - тип батареи
+ * @param minVoltage - минимальное напряжение (В)
+ * @param maxVoltage - максимальное напряжение (В)
+ * @returns напряжение (В)
+ */
+export function calculateNonLinearVoltage(
+  soc: number,
+  batteryType: BatteryTypeCode,
+  minVoltage: number,
+  maxVoltage: number
+): number {
+  const curve = getVoltageCurve(batteryType);
+  
+  if (!curve) {
+    // Если кривая не найдена — используем линейную модель
+    return minVoltage + (soc / 100) * (maxVoltage - minVoltage);
+  }
+  
+  // 1. Получаем базовое напряжение из кривой
+  const baseVoltage = interpolateVoltage(soc, curve);
+  
+  // 2. Находим диапазон в таблице
+  const curveMin = curve[0].voltage;
+  const curveMax = curve[curve.length - 1].voltage;
+  const curveRange = curveMax - curveMin;
+  
+  if (curveRange === 0) {
+    return minVoltage;
+  }
+  
+  // 3. ⭐ МАСШТАБИРОВАНИЕ ПОД MIN/MAX ПОЛЬЗОВАТЕЛЯ ⭐
+  // Нормализуем напряжение в диапазон 0..1
+  const normalizedVoltage = (baseVoltage - curveMin) / curveRange;
+  
+  // 4. Переводим в диапазон пользователя minVoltage..maxVoltage
+  return minVoltage + normalizedVoltage * (maxVoltage - minVoltage);
 }
