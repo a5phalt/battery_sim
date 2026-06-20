@@ -1,12 +1,12 @@
 // ============================================
-// МОДЕЛЬ РАЗРЯДА БАТАРЕИ
+// МОДЕЛЬ ЗАРЯДА БАТАРЕИ
 // ============================================
 
 import type { BatteryType } from '../types/BatteryType';
 import type { SimulationPoint } from '../types/SimulationPoint';
 import { calculateDeltaSoc, calculateStep } from './batteryModel';
 
-export interface DischargeParams {
+export interface ChargeParams {
   initialSoc: number;
   current: number;
   timeStep: number;
@@ -16,57 +16,49 @@ export interface DischargeParams {
   maxVoltage: number;
 }
 
-export interface DischargeResult {
+export interface ChargeResult {
   points: SimulationPoint[];
   duration: number;
   finalSoc: number;
 }
 
 /**
- * Симуляция разряда до SOC = 0%.
- * На каждом шаге:
- *   1. Считаем точку с текущим SOC
- *   2. Уменьшаем SOC на ΔSOC
- *   3. Останавливаемся, когда SOC ≤ 0
+ * Симуляция заряда до SOC = 100%.
  */
-export function simulateCharge(params: DischargeParams): DischargeResult {
+export function simulateCharge(params: ChargeParams): ChargeResult {
   const points: SimulationPoint[] = [];
   let currentSoc = params.initialSoc;
   let time = 0;
 
- while (currentSoc < 100)  {
-    // Считаем точку
+  while (currentSoc < 100) {
     const point = calculateStep({
       time,
       soc: currentSoc,
+      batteryType: params.batteryType.code, // ← Передаём тип батареи
       minVoltage: params.minVoltage,
       maxVoltage: params.maxVoltage,
       current: params.current,
       internalResistance: params.batteryType.internalResistance,
-      isCharging: false,
+      isCharging: true,
       timeStep: params.timeStep,
     });
     points.push(point);
 
-    // Уменьшаем SOC
     const deltaSoc = calculateDeltaSoc(
       params.current,
       params.timeStep,
       params.capacity,
       params.batteryType.coulombicEfficiency
     );
-    currentSoc = Math.min(
-        100,
-        currentSoc + deltaSoc
-        )
+    currentSoc = Math.min(100, currentSoc + deltaSoc);
 
     time += params.timeStep;
   }
 
-  // Финальная точка (SOC = 0)
   points.push(calculateStep({
     time,
     soc: 100,
+    batteryType: params.batteryType.code,
     minVoltage: params.minVoltage,
     maxVoltage: params.maxVoltage,
     current: params.current,
@@ -78,6 +70,6 @@ export function simulateCharge(params: DischargeParams): DischargeResult {
   return {
     points,
     duration: time,
-    finalSoc: 0,
+    finalSoc: 100,
   };
 }

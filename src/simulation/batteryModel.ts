@@ -3,6 +3,7 @@
 // ============================================
 
 import type { SimulationPoint } from '../types/SimulationPoint';
+import { getVoltageFromCurve } from './voltageCurves';
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -20,38 +21,38 @@ export function calculateDeltaSoc(
 }
 
 /**
- * Напряжение по линейной модели (без учёта сопротивления).
- * U = Vmin + (SOC / 100) × (Vmax - Vmin)
- */
-export function calculateLinearVoltage(
-  soc: number,
-  minVoltage: number,
-  maxVoltage: number
-): number {
-  return minVoltage + (soc / 100) * (maxVoltage - minVoltage);
-}
-
-/**
- * Реальное напряжение с учётом внутреннего сопротивления.
+ * Реальное напряжение с учётом:
+ * 1. Нелинейной кривой разряда (из даташитов)
+ * 2. Внутреннего сопротивления
  * 
- * При РАЗРЯДЕ: напряжение НИЖЕ линейного
- *   U = U_linear - I × R
- *   (ток "тянет" напряжение вниз)
- * 
- * При ЗАРЯДЕ: напряжение ВЫШЕ линейного
- *   U = U_linear + I × R
- *   (нужно "продавить" ток внутрь батареи)
+ * @param soc - уровень заряда (%)
+ * @param batteryType - тип батареи
+ * @param minVoltage - минимальное напряжение
+ * @param maxVoltage - максимальное напряжение
+ * @param current - ток (А)
+ * @param internalResistance - внутреннее сопротивление (Ом)
+ * @param isCharging - true если заряд, false если разряд
+ * @returns напряжение на клеммах (В)
  */
 export function calculateRealVoltage(
-  linearVoltage: number,
+  soc: number,
+  batteryType: string,
+  minVoltage: number,
+  maxVoltage: number,
   current: number,
   internalResistance: number,
   isCharging: boolean
 ): number {
+  // 1. Базовое напряжение из нелинейной кривой
+  const baseVoltage = getVoltageFromCurve(soc, batteryType, minVoltage, maxVoltage);
+
+  // 2. Падение напряжения на внутреннем сопротивлении
   const voltageDrop = current * internalResistance;
+
+  // 3. При заряде напряжение ВЫШЕ, при разряде НИЖЕ
   return isCharging
-    ? linearVoltage + voltageDrop
-    : linearVoltage - voltageDrop;
+    ? baseVoltage + voltageDrop
+    : baseVoltage - voltageDrop;
 }
 
 /**
@@ -70,11 +71,11 @@ export function calculateEnergy(power: number, timeStep: number): number {
 
 /**
  * Создаёт одну точку симуляции.
- * Собирает все расчёты в один объект SimulationPoint.
  */
 export function calculateStep(params: {
   time: number;
   soc: number;
+  batteryType: string;
   minVoltage: number;
   maxVoltage: number;
   current: number;
@@ -82,22 +83,17 @@ export function calculateStep(params: {
   isCharging: boolean;
   timeStep: number;
 }): SimulationPoint {
-  // 1. Линейное напряжение (идеальное, без потерь)
-  const voltageLinear = calculateLinearVoltage(
-    params.soc,
-    params.minVoltage,
-    params.maxVoltage
-  );
-
-  // 2. Реальное напряжение (с учётом внутреннего сопротивления)
+  // Реальное напряжение с нелинейной кривой
   const voltage = calculateRealVoltage(
-    voltageLinear,
+    params.soc,
+    params.batteryType,
+    params.minVoltage,
+    params.maxVoltage,
     params.current,
     params.internalResistance,
     params.isCharging
   );
 
-  // 3. Мощность и энергия
   const power = calculatePower(voltage, params.current);
   const energy = calculateEnergy(power, params.timeStep);
 

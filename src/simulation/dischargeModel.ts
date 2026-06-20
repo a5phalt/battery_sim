@@ -24,10 +24,6 @@ export interface DischargeResult {
 
 /**
  * Симуляция разряда до SOC = 0%.
- * На каждом шаге:
- *   1. Считаем точку с текущим SOC
- *   2. Уменьшаем SOC на ΔSOC
- *   3. Останавливаемся, когда SOC ≤ 0
  */
 export function simulateDischarge(params: DischargeParams): DischargeResult {
   const points: SimulationPoint[] = [];
@@ -35,10 +31,10 @@ export function simulateDischarge(params: DischargeParams): DischargeResult {
   let time = 0;
 
   while (currentSoc > 0) {
-    // Считаем точку
     const point = calculateStep({
       time,
       soc: currentSoc,
+      batteryType: params.batteryType.code, // ← Передаём тип батареи
       minVoltage: params.minVoltage,
       maxVoltage: params.maxVoltage,
       current: params.current,
@@ -48,7 +44,6 @@ export function simulateDischarge(params: DischargeParams): DischargeResult {
     });
     points.push(point);
 
-    // Уменьшаем SOC
     const deltaSoc = calculateDeltaSoc(
       params.current,
       params.timeStep,
@@ -64,6 +59,7 @@ export function simulateDischarge(params: DischargeParams): DischargeResult {
   points.push(calculateStep({
     time,
     soc: 0,
+    batteryType: params.batteryType.code,
     minVoltage: params.minVoltage,
     maxVoltage: params.maxVoltage,
     current: params.current,
