@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  // Этот массив говорит Tailwind: "ищи мои стили в index.html и во всех файлах внутри src/"
+  darkMode: 'class', // <--- ВОТ ЭТА СТРОЧКА ВКЛЮЧАЕТ МАГИЮ
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",

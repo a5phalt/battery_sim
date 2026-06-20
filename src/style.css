@@ -3,12 +3,9 @@
 @tailwind utilities;
 
 :root {
-
     /* Fonts */
-
     --font-logo: 'Manrope', sans-serif;
     --font-body: 'Inter', sans-serif;
-
 }
 
 body {
@@ -16,9 +13,7 @@ body {
 }
 
 @layer utilities {
-
     .font-logo {
         font-family: var(--font-logo);
     }
-
 }
