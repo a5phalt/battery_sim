@@ -1,8 +1,33 @@
 <script setup lang="ts">
+// Берем данные из нашего глобального "мозга"
+import { computed } from 'vue'
 import { useSimulation } from '../../composables/useSimulation'
 
-// Берем данные из нашего глобального "мозга"
 const { params, currentMode } = useSimulation()
+
+const remainingTime = computed(() => {
+  if (params.current <= 0) {
+    return '∞'
+  }
+
+  let hours = 0
+
+  if (currentMode.value === 'discharge') {
+    hours =
+      (params.capacity * (params.initialSoc / 100))
+      / params.current
+  } else {
+    hours =
+      (params.capacity * ((100 - params.initialSoc) / 100))
+      / params.current
+  }
+
+  const h = Math.floor(hours)
+  const m = Math.round((hours - h) * 60)
+
+  return `${h} ч ${m} мин`
+})
+
 </script>
 
 <template>
@@ -31,7 +56,9 @@ const { params, currentMode } = useSimulation()
 
       <div class="flex flex-col items-center mb-auto">
         <span class="text-[10px] xl:text-xs font-medium opacity-90 mb-1">Осталось времени</span>
-        <span class="text-xs sm:text-sm 2xl:text-base font-bold whitespace-nowrap">2 ч 35 мин</span>
+        <span class="text-xs sm:text-sm 2xl:text-base font-bold whitespace-nowrap">
+        {{ remainingTime }}
+      </span>
       </div>
 
     </div>
