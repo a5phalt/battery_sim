@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { useSimulation } from '../../composables/useSimulation'
+import { usePresets } from '../../composables/usePresets'
 
-// Вытягиваем наши параметры и новые переменные для типов батарей
 const {
   params,
   batteryTypes,
@@ -9,6 +10,48 @@ const {
   activeType,
   runSimulation
 } = useSimulation()
+
+const {
+  presets,
+  savePreset
+} = usePresets()
+console.log('PRESETS', presets.value)
+
+const selectedPresetId = ref('')
+
+const applyPreset = (presetId: string) => {
+  const preset = presets.value.find(
+    p => p.id === presetId
+  )
+
+  if (!preset) return
+
+  activeTypeCode.value = preset.typeId
+
+  params.capacity = preset.capacity
+  params.minVoltage = preset.minVoltage
+  params.maxVoltage = preset.maxVoltage
+  params.current = preset.current
+}
+
+watch(selectedPresetId, applyPreset)
+const createPreset = () => {
+  const name = prompt('Название пресета')
+
+  if (!name) return
+
+  savePreset({
+    id: crypto.randomUUID(),
+    name,
+
+    typeId: activeTypeCode.value,
+
+    capacity: params.capacity,
+    minVoltage: params.minVoltage,
+    maxVoltage: params.maxVoltage,
+    current: params.current
+  })
+}
 
 // Обновленная функция валидации без alert
 const validateInput = (field: keyof typeof params, min: number, max: number, event: Event) => {
@@ -51,10 +94,22 @@ const validateInput = (field: keyof typeof params, min: number, max: number, eve
 
       <div class="flex flex-col gap-1.5">
         <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Пресет</label>
-        <select class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-blue-500 transition-colors cursor-pointer text-slate-500">
-          <option>Выберите пресет</option>
-          <option>Свой вариант</option>
-        </select>
+        <select
+  v-model="selectedPresetId"
+  class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-blue-500 transition-colors cursor-pointer"
+      >
+        <option value="">
+          Выберите пресет
+        </option>
+
+        <option
+          v-for="preset in presets"
+          :key="preset.id"
+          :value="preset.id"
+        >
+          {{ preset.name }}
+        </option>
+      </select>
       </div>
 
       <div class="flex flex-col gap-1">
@@ -189,7 +244,10 @@ const validateInput = (field: keyof typeof params, min: number, max: number, eve
       <button  @click="runSimulation" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg text-sm font-semibold shadow-sm transition-colors">
         Применить
       </button>
-      <button class="flex-1 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-blue-600 border border-slate-200 dark:border-slate-600 py-2.5 rounded-lg text-sm font-semibold transition-colors">
+      <button
+        @click="createPreset"
+        class="flex-1 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-blue-600 border border-slate-200 dark:border-slate-600 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+      >
         Сохранить пресет
       </button>
     </div>

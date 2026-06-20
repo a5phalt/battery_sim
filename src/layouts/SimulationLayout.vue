@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+// import { ref } from 'vue'
 import ParametersPanel from '../components/parameters/ParametersPanel.vue'
 import BatteryVisualization from '../components/battery/BatteryVisualization.vue'
 import VoltageChart from '../components/charts/VoltageChart.vue'
 import SocChart from '../components/charts/SocChart.vue'
-import type { SimulationPoint } from '../types/SimulationPoint'
+// import type { SimulationPoint } from '../types/SimulationPoint'
 
 import { useSimulation } from '../composables/useSimulation'
 
