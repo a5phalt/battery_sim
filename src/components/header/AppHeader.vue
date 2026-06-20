@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useSimulation } from '../../composables/useSimulation'
+// Подключаем наш новый умный "мозг" для темы
+import { useTheme } from '../../composables/useTheme'
 
 const emit = defineEmits<{
   (e: 'open-panel', mode: 'presets' | 'history' | 'settings'): void
@@ -8,18 +10,10 @@ const emit = defineEmits<{
 
 const { currentMode } = useSimulation()
 
-const isDark = ref(false)
-const isMenuOpen = ref(false)
+// Забираем переменную и функцию из composable-файла (они заменят старую ручную логику)
+const { isDark, toggleTheme } = useTheme()
 
-const toggleTheme = () => {
-  isDark.value = !isDark.value
-  
-  if (isDark.value) {
-    document.documentElement.classList.add('dark')
-  } else {
-    document.documentElement.classList.remove('dark')
-  }
-}
+const isMenuOpen = ref(false)
 
 const handleMenuClick = (mode: 'presets' | 'history' | 'settings') => {
   isMenuOpen.value = false
